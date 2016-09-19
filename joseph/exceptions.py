@@ -1,0 +1,2 @@
+class JosephException(Exception):
+    pass
