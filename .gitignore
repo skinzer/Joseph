@@ -1,3 +1,5 @@
 /tmp
 /data
-config.py
+/config.py
+.idea/
+__pycache__
