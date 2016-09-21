@@ -4,3 +4,7 @@ class JosephException(Exception):
 
 class JosephConfigException(JosephException):
     pass
+
+	
+class JosephFileNotFound(JosephException):
+	pass
