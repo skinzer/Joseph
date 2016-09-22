@@ -9,6 +9,6 @@ class ConfigException(JosephException):
 class InvalidState(JosephException):
     pass
 
-
+	
 class JosephFileNotFound(JosephException):
 	pass
