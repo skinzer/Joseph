@@ -1,6 +1,7 @@
 /tmp
 /data
 /config.py
+/plugins
 .idea/
 __pycache__
 *.pyc

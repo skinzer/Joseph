@@ -57,3 +57,8 @@ class Entity(object):
             filename = self.name
 
         return filename
+
+class Plugin(Entity):
+    def __init__(self):
+        super(Entity, self).__init__()
+        self.enabled = True
