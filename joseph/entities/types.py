@@ -58,7 +58,15 @@ class Entity(object):
 
         return filename
 
-class Plugin(Entity):
+class PluginType(Entity):
     def __init__(self):
         super(Entity, self).__init__()
         self.enabled = True
+
+    @property
+    def compiled(self):
+        return self._compiled
+
+    @compiled.setter
+    def compiled(self, value):
+        self._compiled = value

@@ -1,7 +1,9 @@
 import os
 import types
 
-from ..entities.types import Plugin
+from ..entities import EntityManager
+from ..entities.types import PluginType
+from ..helpers import Stack
 
 
 class PluginManager(object):
@@ -13,9 +15,8 @@ class PluginManager(object):
     are stored as an entity in the :class:`EntityManager`.
     """
 
-    def __init__(self, app_root, entity_manager, plugin_dir='plugins', file_ext='py'):
+    def __init__(self, app_root, plugin_dir='plugins', file_ext='py'):
         self.app_root = app_root
-        self.em = entity_manager
         self.file_ext = file_ext
         self.not_run = Stack()
         self.plugin_dir = os.path.join(app_root, plugin_dir)
@@ -26,15 +27,18 @@ class PluginManager(object):
         that matches :property:`file_ext`.
 
         If :param:`auto_compile` is ``True``, the :meth:`compile` is
-        called on the plugin.
+        called on the plugin, otherwise a plugin entity is yielded.
         """
         for file in os.listdir(self.plugin_dir):
             if file.endswith(self.file_ext):
                 filename = file.replace(self.file_ext, '')
-                plugin_entity = self.em.construct(filename, Plugin)
+                plugin_entity = entity_manager.construct(filename, PluginType)
 
                 if auto_compile:
                     self.compile(plugin_entity, auto_run)
+
+                else:
+                    yield plugin_entity
 
     def compile(self, plugin_entity, auto_run=True):
         """
@@ -59,7 +63,7 @@ class PluginManager(object):
             plugin_type.run()
 
         else:
-            self.em.update(plugin_entity, compiled=plugin_type)
+            entity_manager.update(plugin_entity, compiled=plugin_type)
 
     def compile_all(self, auto_run=True):
         """
