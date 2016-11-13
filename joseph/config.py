@@ -1,6 +1,7 @@
 import os
 import types
 
+from config import APP_ROOT
 from .exceptions import JosephConfigException
 
 
@@ -25,18 +26,17 @@ class Config(dict):
 
     }
 
-    def __init__(self, app_root, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Initilizes the config object. The :param kwargs: can be used to pass
         default values as a `dictionary`, if no values are provided, the
         object's default values are used.
 
-        :param app_root: The root of the current application
+        :param args: Default values as dict
         :param kwargs: Default values
         """
         super(dict, self).__init__()
 
-        self.app_root = app_root
         for arg in args:
             if isinstance(arg, dict):
                 self.update(arg)
@@ -75,7 +75,7 @@ class Config(dict):
         """
         return types.MappingProxyType(self)
 
-    def from_file(self, filename, silent=False):
+    async def from_file(self, filename='config.py', silent=False):
         """
         This method imports a file as if it was a 'normal' module and updates
         itself with the variables
@@ -86,7 +86,7 @@ class Config(dict):
         :param silent: Set to ``True`` if you do not want any errors to show
         :return: ``MappedProxyType``
         """
-        filename = os.path.join(self.app_root, filename)
+        filename = os.path.join(APP_ROOT, filename)
 
         ct = types.ModuleType('config')
         ct.__file__ = filename
