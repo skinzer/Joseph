@@ -1,8 +1,9 @@
 import os
 import shutil
+
 import yaml
 
-from .types import Entity
+from .types import EntityType
 from ..helpers import Stack, camel_to_snake
 
 
@@ -175,7 +176,6 @@ class EntityManager(object):
                 return False
 
         return True
-
 
     def _delete_entity_file(self, entity, silent=False, delete_empty_dir=True):
         """
