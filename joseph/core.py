@@ -4,11 +4,10 @@ import multiprocessing
 import janus
 
 from .config import Config
-from .entities.types import ApplicationEntity
 from .states import State
 
 
-class Joseph(ApplicationEntity):
+class Joseph(object):
     """Joseph's heart and soul"""
 
     def __init__(self, loop=None):

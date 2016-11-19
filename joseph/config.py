@@ -92,22 +92,30 @@ class Config(dict):
         """
         filename = os.path.join(APP_ROOT, filename)
 
-        ct = types.ModuleType('config')
-        ct.__file__ = filename
+        config = types.ModuleType('config')
+        config.__file__ = filename
 
         try:
             with open(filename, 'r') as file:
-                exec(compile(file.read(), filename, 'exec'), ct.__dict__)
+                exec(compile(file.read(), filename, 'exec'), config.__dict__)
 
         except IOError as e:
             if not silent:
                 raise JosephConfigException(e.strerror)
 
-        for key in dir(ct):
+        for key in dir(config):
             if key.isupper():
-                self[key] = getattr(ct, key)
+                self[key] = getattr(config, key)
 
         return self.proxy
+
+    async def from_env_vars(self, prefix="JOSEPH_"):
+        """ Allows reading config variables from environment variables """
+        for key, value in os.environ.items():
+            if key.startswith(prefix):
+                key = key.replace(prefix)
+
+                self[key] = value
 
     def __repr__(self):
         return str(self.items())
