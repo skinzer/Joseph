@@ -28,7 +28,7 @@ class Config(dict):
 
     def __init__(self, *args, **kwargs):
         """
-        Initilizes the config object. The :param kwargs: can be used to pass
+        Initializes the config object. The :param kwargs: can be used to pass
         default values as a `dictionary`, if no values are provided, the
         object's default values are used.
 
@@ -64,6 +64,10 @@ class Config(dict):
         :return: Value to the requested item
         """
         return self[item]
+
+    def items(self):
+        """ Make sure not to return private attributes """
+        return {key: value for key, value in dict.items(self) if key.isupper()}
 
     @property
     def proxy(self):
@@ -104,3 +108,6 @@ class Config(dict):
                 self[key] = getattr(ct, key)
 
         return self.proxy
+
+    def __repr__(self):
+        return str(self.items())
