@@ -1,1 +1,2 @@
-janus
+asynctest==0.9.0
+janus==0.2.3

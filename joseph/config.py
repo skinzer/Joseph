@@ -2,9 +2,10 @@ import os
 import types
 
 from config import APP_ROOT
+from .exceptions import ConfigException
 
 
-class Config(dict):
+class Config(dict, object):
     """
     Joseph's config object, which works like a regular dictionary, but has
     a few tricks up its sleeve.
@@ -25,7 +26,7 @@ class Config(dict):
 
     }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, **kwargs) -> None:
         """
         Initializes the config object. The :param kwargs: can be used to pass
         default values as a `dictionary`, if no values are provided, the
@@ -34,7 +35,7 @@ class Config(dict):
         :param args: Default values as dict
         :param kwargs: Default values
         """
-        super(dict, self).__init__()
+        super(Config, self).__init__()
 
         for arg in args:
             if isinstance(arg, dict):
@@ -42,43 +43,72 @@ class Config(dict):
 
         self.update(**kwargs or self.DEFAULT_CONFIG)
 
-    def __setattr__(self, key, value):
+    def __setitem__(self, key: str, value) -> None:
         """
-        This method makes it possible to set the dict key like you would
-        with any other object. This an the :meth:`__getitem__` are
-        implemented solely for convenience.
+
+        :param key: Config key
+        :param value: Config value to be set
+        :raise ConfigException: If provided key is lowercase
+        """
+        if not key.isupper():
+            raise ConfigException("Config keys should be uppercase, got '{}' instead".format(key))
+        else:
+            dict.__setitem__(self, key, value)
+
+    def __setattr__(self, key: str, value) -> None:
+        """
+        Sets attributes on the config object, if a lowercase key is provided
+        it's assumed to be private key and therefore set as an attribute.
+        Otherwise it's passed to the :meth: __setitem__
 
         :param key: Key to update
         :param value: Value to set to :param key:
         """
-        self[key] = value
+        if key.islower():
+            object.__setattr__(self, key, value)
+        else:
+            self[key] = value
 
-    def __getattr__(self, item):
+    def __getattr__(self, key: str):
         """
-        This method makes it possible to get the dict key like you would
-        with any other object. This an the :meth:`__setitem__` are
-        implemented solely for convenience.
+        Makes it possible to access config values as if they were regular
+        attributes instead of a dict like.
+        If a lowercase :param: `key` is provided, it's assumed to be a
+        private attribute and therefore the :meth: getattribute is used.
 
-        :param item: Item you want to get
-        :return: Value to the requested item
+        :param key: Key of the item
+        :raise AttributeError:
+        :raise KeyError:
         """
-        return self[item]
+        if key.islower():
+            item = object.__getattribute__(self, key)
+        else:
+            item = self[key]
 
-    def items(self):
+        return item
+
+    def keys(self) -> list:
+        """ Only return non private attributes as key """
+        return [key for key in dict.keys(self) if key.isupper()]
+
+    def values(self) -> list:
+        """ Make sure not to return values associated with private attributes """
+        return [value for key, value in dict.items(self) if key.isupper()]
+
+    def items(self) -> dict:
         """ Make sure not to return private attributes """
         return {key: value for key, value in dict.items(self) if key.isupper()}
 
+    def __dir__(self) -> list:
+        """ Returns everything that's not a config item """
+        return [key for key in dict.__dir__(self) if not key.isupper()]
+
     @property
-    def proxy(self):
-        """
-        By using the :propery:`proxy` you get a ``MappingProxyType`` which
-        is a readonly copy of `self`
+    def proxy(self) -> types.MappingProxyType:
+        """ Return a readonly copy of self """
+        return types.MappingProxyType(self.items())
 
-        :return: ``MappingProxyType`` of self
-        """
-        return types.MappingProxyType(self)
-
-    async def from_file(self, filename='config.py', silent=False):
+    async def from_file(self, filename: str = 'config.py', silent: bool = False) -> types.MappingProxyType:
         """
         This method imports a file as if it was a 'normal' module and updates
         itself with the variables
@@ -87,7 +117,6 @@ class Config(dict):
 
         :param filename: The relative or absolute path to the config file
         :param silent: Set to ``True`` if you do not want any errors to show
-        :return: ``MappedProxyType``
         """
         filename = os.path.join(APP_ROOT, filename)
 
@@ -100,7 +129,7 @@ class Config(dict):
 
         except IOError as e:
             if not silent:
-                raise JosephConfigException(e.strerror)
+                raise ConfigException(e.strerror)
 
         for key in dir(config):
             if key.isupper():
@@ -108,13 +137,18 @@ class Config(dict):
 
         return self.proxy
 
-    async def from_env_vars(self, prefix="JOSEPH_"):
-        """ Allows reading config variables from environment variables """
+    async def from_env_vars(self, prefix: str = "JOSEPH_") -> types.MappingProxyType:
+        """
+        Loops over environment variables and updates ``self`` with any values matching the
+        specified prefix
+        """
         for key, value in os.environ.items():
             if key.startswith(prefix):
-                key = key.replace(prefix)
+                key = key.replace(prefix, '')
 
                 self[key] = value
 
-    def __repr__(self):
+        return self.proxy
+
+    def __repr__(self) -> str:
         return str(self.items())
