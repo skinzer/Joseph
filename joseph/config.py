@@ -2,7 +2,6 @@ import os
 import types
 
 from config import APP_ROOT
-from .exceptions import JosephConfigException
 
 
 class Config(dict):

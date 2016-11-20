@@ -1,6 +1,7 @@
 import re
 
 from .stack import Stack
+from .states import State
 
 # Regexes taken from:
 # http://stackoverflow.com/questions/1175208/elegant-python-function-to-convert-camelcase-to-snake-case

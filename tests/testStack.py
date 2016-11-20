@@ -1,6 +1,6 @@
 import unittest
 
-from joseph.helpers import Stack
+from joseph.utils import Stack
 
 
 class TestStack(unittest.TestCase):

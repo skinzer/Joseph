@@ -4,7 +4,7 @@ import multiprocessing
 import janus
 
 from .config import Config
-from .states import State
+from .utils.states import State
 
 
 class Joseph(object):

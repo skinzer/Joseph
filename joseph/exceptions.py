@@ -2,5 +2,9 @@ class JosephException(Exception):
     pass
 
 
-class JosephConfigException(JosephException):
+class ConfigException(JosephException):
+    pass
+
+
+class InvalidState(JosephException):
     pass
