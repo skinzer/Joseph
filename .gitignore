@@ -1,6 +1,19 @@
-/tmp
-/data
-/config.py
+# PyCharm
 .idea/
+
+# Python
 __pycache__
 *.pyc
+.DS_Store
+Joseph.egg-info/
+joseph/.DS_Store
+.tox/
+.eggs/
+
+# Packaging
+.coverage
+
+# Project
+/tmp
+/data
+config.py
