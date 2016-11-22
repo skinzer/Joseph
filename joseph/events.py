@@ -1,5 +1,6 @@
 import datetime
 import inspect
+import os
 from typing import Union
 
 from .core import Joseph
@@ -10,7 +11,10 @@ from .utils import State
 class Namespace(object):
     def __init__(self, namespace: str = None):
         """ Use the callers filename if no namespace is provided """
-        self.namespace = namespace or inspect.stack()[1].filename
+        if not namespace:
+            path = inspect.stack()[1].filename
+            namespace = os.path.basename(path).replace(".py", "")
+        self.namespace = namespace
 
     def make_event(self, event: str, **data):
         """ Returns an event on the current namespace """
