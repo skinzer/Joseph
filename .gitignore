@@ -16,4 +16,5 @@ joseph/.DS_Store
 # Project
 /tmp
 /data
-config.py
+/config.py
+
