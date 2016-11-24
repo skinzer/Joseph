@@ -1,4 +1,5 @@
 import os
+import shutil
 import types
 
 import asynctest
@@ -19,6 +20,8 @@ class TestConfig(asynctest.TestCase):
     use_default_loop = True
     forbid_get_event_loop = False
 
+    _delete_config_file = False
+
     def setUp(self):
         self.config = Config(APP_ROOT, {'FOO': 'bar'})
         for var in self.environment_variables:
@@ -31,6 +34,22 @@ class TestConfig(asynctest.TestCase):
                 del os.environ[var]
             except KeyError:
                 continue
+
+        if self._delete_config_file and os.path.isfile(self.config_path):
+            os.remove(self.config_path)
+
+    @property
+    def config_path(self):
+        return os.path.join(APP_ROOT, "config.py")
+
+    @property
+    def default_config_path(self):
+        return os.path.join(APP_ROOT, "config.default.py")
+
+    def setUpConfigFile(self):
+        if not os.path.isfile(self.config_path):
+            shutil.copy(self.default_config_path, self.config_path)
+            self._delete_config_file = True
 
     @asynctest.fail_on(unused_loop=False)
     def test_test(self):
@@ -134,6 +153,8 @@ class TestConfig(asynctest.TestCase):
             proxy['TEST_1'] = 123
 
     def test_from_file(self):
+        self.setUpConfigFile()
+
         # Not a particularly good idea
         self.config['WORKER_COUNT'] = 99
 
