@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/NiekKeijzer/Joseph.svg?branch=master)](https://travis-ci.org/NiekKeijzer/Joseph)
+[![Coverage Status](https://coveralls.io/repos/github/NiekKeijzer/Joseph/badge.svg?branch=master)](https://coveralls.io/github/NiekKeijzer/Joseph?branch=master)
+
 # Joseph
 
 Joseph (the Butler) an event driven, extensible home automation project with framework aspirations. 
