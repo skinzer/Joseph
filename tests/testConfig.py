@@ -3,7 +3,13 @@ import types
 
 import asynctest
 
-from config import APP_ROOT
+try:
+    from config import APP_ROOT
+except ImportError:
+    import imp
+
+    APP_ROOT = imp.load_source('config', 'config.default.py').APP_ROOT
+
 from joseph.config import Config
 from joseph.exceptions import ConfigException
 
