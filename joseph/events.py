@@ -16,7 +16,7 @@ class Namespace(object):
             namespace = os.path.basename(path).replace(".py", "")
         self.namespace = namespace
 
-    def make_event(self, event: str, **data):
+    def make_event(self, event: str = "", **data):
         """ Returns an event on the current namespace """
         return Event(self, event, **data)
 
@@ -49,7 +49,7 @@ class Event(object):
 
     def __hash__(self) -> int:
         """ If the strict attribute is true, hash the entire object else only hash the string representation """
-        return hash(self.__dict__) if self.STRICT else hash(str(self))
+        return hash(str(self.__dict__)) if self.STRICT else hash(str(self))
 
     def __str__(self) -> str:
         """ Always includes namespace and might include event if not empty (format: NAMESPACE:EVENT) """
