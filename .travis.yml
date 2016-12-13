@@ -10,4 +10,5 @@ script:
 after_success:
   - coveralls
 addons:
-  - srcclr: true
+  - srcclr: 
+    - debug: true
